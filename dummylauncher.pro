@@ -26,12 +26,14 @@ SOURCES += \
         main.cpp \
         dialog.cpp \
     state/state.cpp \
-    state/initialstate.cpp
+    state/initialstate.cpp \
+    state/receivefilesstate.cpp
 
 HEADERS += \
         dialog.h \
     state/state.h \
-    state/initialstate.h
+    state/initialstate.h \
+    state/receivefilesstate.h
 
 FORMS += \
         dialog.ui
