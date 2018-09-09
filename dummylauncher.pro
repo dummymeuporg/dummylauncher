@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui network widgets
 
 TARGET = dummylauncher
 TEMPLATE = app
@@ -24,10 +24,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        dialog.cpp
+        dialog.cpp \
+    state/state.cpp
 
 HEADERS += \
-        dialog.h
+        dialog.h \
+    state/state.h
 
 FORMS += \
         dialog.ui
