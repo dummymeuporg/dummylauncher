@@ -21,6 +21,12 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = nullptr);
     ~Dialog();
+
+    template<typename T>
+    void setState()
+    {
+        m_state = std::make_unique<T>(*this);
+    }
 private slots:
     void onDataReceived();
     void onConnect();
@@ -31,5 +37,6 @@ private:
     Ui::Dialog *ui;
     QTcpSocket *m_socket;
     std::unique_ptr<SessionState::State> m_state;
+    quint16 m_payloadSize;
 
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 class Dialog;
+class QByteArray;
 
 namespace SessionState
 {
@@ -8,6 +9,8 @@ namespace SessionState
     {
     public:
         State(::Dialog&);
+        virtual ~State();
+        virtual void onRead(QByteArray&) = 0;
     protected:
         ::Dialog& m_dialog;
     };

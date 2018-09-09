@@ -1,6 +1,6 @@
 #include <QDebug>
 
-#include "state/state.h"
+#include "state/initialstate.h"
 
 #include "dialog.h"
 #include "ui_dialog.h"
@@ -8,7 +8,9 @@
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
-    m_socket(nullptr)
+    m_socket(nullptr),
+    m_state(new SessionState::InitialState(*this)),
+    m_payloadSize(0)
 {
     ui->setupUi(this);
 
@@ -41,6 +43,37 @@ Dialog::~Dialog()
 void Dialog::onDataReceived()
 {
     qDebug() << m_socket->bytesAvailable();
+    QDataStream in(m_socket);
+    in.setByteOrder(QDataStream::LittleEndian);
+
+    if (m_payloadSize == 0)
+    {
+        if (m_socket->bytesAvailable() < int(sizeof(quint16)))
+        {
+            return;
+        }
+        in >> m_payloadSize;
+    }
+
+    if (m_socket->bytesAvailable() < m_payloadSize)
+    {
+        qDebug() << m_socket->bytesAvailable() << "<" << m_payloadSize;
+        return;
+    }
+
+    while(m_socket->bytesAvailable() > 0)
+    {
+        qDebug() << "Will read " << m_payloadSize;
+        QByteArray buf(m_payloadSize, '\0');
+        m_socket->read(buf.data(), m_payloadSize);
+        m_state->onRead(buf);
+        if (m_socket->bytesAvailable() >= int(sizeof(quint16)))
+        {
+            m_socket->read(reinterpret_cast<char*>(&m_payloadSize),
+                           sizeof(quint16));
+        }
+    }
+    m_payloadSize = 0;
 }
 
 void Dialog::onConnect()
@@ -50,7 +83,7 @@ void Dialog::onConnect()
     QDataStream out(&paquet, QIODevice::WriteOnly);
     out.setByteOrder(QDataStream::LittleEndian);
     quint16 version = 1;
-    out << sizeof(quint16) << version;
+    out << quint16(sizeof(quint16)) << version;
     m_socket->write(paquet);
 }
 

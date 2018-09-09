@@ -25,11 +25,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         dialog.cpp \
-    state/state.cpp
+    state/state.cpp \
+    state/initialstate.cpp
 
 HEADERS += \
         dialog.h \
-    state/state.h
+    state/state.h \
+    state/initialstate.h
 
 FORMS += \
         dialog.ui
