@@ -1,4 +1,6 @@
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 
 #include "state/receivefilesstate.h"
 
@@ -21,5 +23,25 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
     QString filename(buf.left(buf.length() - 20));
 
     qDebug() << "Filename: " << filename;
+
+    QFileInfo fileInfo(filename);
+    QDir dir(fileInfo.dir());
+    if (!dir.exists())
+    {
+        // Create dir.
+        dir.mkdir(".");
+
+        // Add file to download.
+        return;
+    }
+
+    if (!fileInfo.exists())
+    {
+        // Add file to download.
+        return;
+    }
+
+    // Compute sha1 & compare.
+
 
 }

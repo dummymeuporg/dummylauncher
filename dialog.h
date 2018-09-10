@@ -27,16 +27,20 @@ public:
     {
         m_state = std::make_unique<T>(*this);
     }
+signals:
+    void payloadDecoded();
 private slots:
     void onDataReceived();
     void onConnect();
     void onDisconnect();
     void onSocketError(QAbstractSocket::SocketError);
+    void processData();
 
 private:
     Ui::Dialog *ui;
     QTcpSocket *m_socket;
     std::unique_ptr<SessionState::State> m_state;
     quint16 m_payloadSize;
+    QByteArray m_payload;
 
 };

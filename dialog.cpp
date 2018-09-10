@@ -31,6 +31,10 @@ Dialog::Dialog(QWidget *parent) :
                      SIGNAL(error(QAbstractSocket::SocketError)),
                      this,
                      SLOT(onSocketError(QAbstractSocket::SocketError)));
+    QObject::connect(this,
+                     SIGNAL(payloadDecoded()),
+                     this,
+                     SLOT(processData()));
     ui->labelUpdate->setText(tr("Connecting to update server..."));
     m_socket->connectToHost("kojiro.gcir.ovh", 8087);
 }
@@ -42,7 +46,8 @@ Dialog::~Dialog()
 
 void Dialog::onDataReceived()
 {
-    qDebug() << m_socket->bytesAvailable();
+    qDebug() << "Bytes available: " <<
+                m_socket->bytesAvailable();
     QDataStream in(m_socket);
     in.setByteOrder(QDataStream::LittleEndian);
 
@@ -57,21 +62,17 @@ void Dialog::onDataReceived()
 
     if (m_socket->bytesAvailable() < m_payloadSize)
     {
-        qDebug() << m_socket->bytesAvailable() << "<" << m_payloadSize;
+        qDebug() << "Too few data. " <<
+                    m_socket->bytesAvailable() << "<" << m_payloadSize;
         return;
     }
 
-    while(m_socket->bytesAvailable() > 0)
+    if(m_socket->bytesAvailable() > 0)
     {
         qDebug() << "Will read " << m_payloadSize;
-        QByteArray buf(m_payloadSize, '\0');
-        m_socket->read(buf.data(), m_payloadSize);
-        m_state->onRead(buf);
-        if (m_socket->bytesAvailable() >= int(sizeof(quint16)))
-        {
-            m_socket->read(reinterpret_cast<char*>(&m_payloadSize),
-                           sizeof(quint16));
-        }
+        m_payload.resize(m_payloadSize);
+        m_socket->read(m_payload.data(), m_payloadSize);
+        emit payloadDecoded();
     }
     m_payloadSize = 0;
 }
@@ -95,4 +96,16 @@ void Dialog::onDisconnect()
 void Dialog::onSocketError(QAbstractSocket::SocketError error)
 {
     Q_UNUSED(error);
+}
+
+void Dialog::processData()
+{
+    m_state->onRead(m_payload);
+    if (m_socket->bytesAvailable() >= int(sizeof(quint16)))
+    {
+        m_socket->read(reinterpret_cast<char*>(&m_payloadSize),
+                       sizeof(quint16));
+        qDebug() << "Next precoss: " << m_payloadSize;
+        emit m_socket->readyRead();
+    }
 }
