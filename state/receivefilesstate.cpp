@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QString>
 
+#include "dialog.h"
 
 #include "state/receivefilesstate.h"
 
@@ -43,6 +44,7 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
     if (!fileInfo.exists())
     {
         // Add file to download.
+        m_dialog.addDownload(filename);
         return;
     }
 

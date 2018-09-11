@@ -36,7 +36,7 @@ Dialog::Dialog(QWidget *parent) :
                      this,
                      SLOT(processData()));
     ui->labelUpdate->setText(tr("Connecting to update server..."));
-    m_socket->connectToHost("kojiro.gcir.ovh", 8087);
+    m_socket->connectToHost("kojiro.gcir.ovh", 21);
 }
 
 Dialog::~Dialog()
@@ -108,4 +108,9 @@ void Dialog::processData()
         qDebug() << "Next precoss: " << m_payloadSize;
         emit m_socket->readyRead();
     }
+}
+
+void Dialog::addDownload(const QString& filename)
+{
+    m_downloadList.enqueue(filename);
 }

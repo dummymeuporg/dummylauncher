@@ -3,6 +3,8 @@
 #include <memory>
 
 #include <QDialog>
+#include <QQueue>
+#include <QString>
 #include <QtNetwork>
 
 namespace SessionState
@@ -27,6 +29,8 @@ public:
     {
         m_state = std::make_unique<T>(*this);
     }
+
+    void addDownload(const QString&);
 signals:
     void payloadDecoded();
 private slots:
@@ -42,5 +46,6 @@ private:
     std::unique_ptr<SessionState::State> m_state;
     quint16 m_payloadSize;
     QByteArray m_payload;
+    QQueue<QString> m_downloadList;
 
 };
