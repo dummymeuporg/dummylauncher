@@ -1,6 +1,9 @@
+#include <QCryptographicHash>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QString>
+
 
 #include "state/receivefilesstate.h"
 
@@ -21,8 +24,10 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
 
     // Separate hash from filename
     QString filename(buf.left(buf.length() - 20));
+    QByteArray hash(buf.right(20));
 
     qDebug() << "Filename: " << filename;
+    qDebug() << "Sum: " << hash;
 
     QFileInfo fileInfo(filename);
     QDir dir(fileInfo.dir());
@@ -42,6 +47,28 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
     }
 
     // Compute sha1 & compare.
+    QByteArray computedHash(filesum(filename));
 
+
+}
+
+
+QByteArray
+SessionState::ReceiveFilesState::filesum(const QString& filename)
+{
+    QFile file(filename);
+    QCryptographicHash hasher(QCryptographicHash::Sha1);
+    QByteArray chunk(SessionState::ReceiveFilesState::CHUNK_SIZE, '\0');
+    qint64 count = 0;
+    file.open(QIODevice::ReadOnly);
+
+    do
+    {
+        count = file.read(chunk.data(),
+                          SessionState::ReceiveFilesState::CHUNK_SIZE);
+        hasher.addData(chunk);
+    } while (count == SessionState::ReceiveFilesState::CHUNK_SIZE);
+
+    return hasher.result();
 
 }
