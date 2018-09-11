@@ -51,6 +51,16 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
     // Compute sha1 & compare.
     QByteArray computedHash(filesum(filename));
 
+    if (computedHash != hash)
+    {
+        qDebug() << "Hashes don't match. Download.";
+        m_dialog.addDownload(filename);
+    }
+    else
+    {
+        qDebug() << "Hashes match.";
+    }
+
 
 }
 

@@ -4,7 +4,7 @@
 #include "dialog.h"
 
 #include "state/initialstate.h"
-#include "state/receivefilesstate.h"
+#include "state/receivefilescountstate.h"
 
 SessionState::InitialState::InitialState(::Dialog& dialog)
     : SessionState::State(dialog)
@@ -25,6 +25,6 @@ void SessionState::InitialState::onRead(QByteArray& buf)
     if (data == "OK")
     {
         qDebug() << "Switch to receive files state.";
-        m_dialog.setState<SessionState::ReceiveFilesState>();
+        m_dialog.setState<SessionState::ReceiveFilesCountState>();
     }
 }

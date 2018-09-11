@@ -14,6 +14,7 @@ namespace SessionState
         ReceiveFilesState(::Dialog&);
         virtual ~ReceiveFilesState() override;
         virtual void onRead(QByteArray& buf) override;
+    private:
         static QByteArray filesum(const QString&);
     };
 }

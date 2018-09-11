@@ -36,7 +36,8 @@ Dialog::Dialog(QWidget *parent) :
                      this,
                      SLOT(processData()));
     ui->labelUpdate->setText(tr("Connecting to update server..."));
-    m_socket->connectToHost("kojiro.gcir.ovh", 21);
+    QString hostname = "kojiro.gcir.ovh";
+    m_socket->connectToHost(hostname, 21);
 }
 
 Dialog::~Dialog()
@@ -105,7 +106,7 @@ void Dialog::processData()
     {
         m_socket->read(reinterpret_cast<char*>(&m_payloadSize),
                        sizeof(quint16));
-        qDebug() << "Next precoss: " << m_payloadSize;
+        qDebug() << "Next process: " << m_payloadSize;
         emit m_socket->readyRead();
     }
 }
