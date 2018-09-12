@@ -25,6 +25,6 @@ void SessionState::InitialState::onRead(QByteArray& buf)
     if (data == "OK")
     {
         qDebug() << "Switch to receive files state.";
-        m_dialog.setState<SessionState::ReceiveFilesCountState>();
+        m_dialog.setState(new SessionState::ReceiveFilesCountState(m_dialog));
     }
 }

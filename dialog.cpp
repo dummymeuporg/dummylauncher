@@ -35,7 +35,7 @@ Dialog::Dialog(QWidget *parent) :
                      SIGNAL(payloadDecoded()),
                      this,
                      SLOT(processData()));
-    ui->labelUpdate->setText(tr("Connecting to update server..."));
+    setStatus(tr("Connecting to update server..."));
     QString hostname = "kojiro.gcir.ovh";
     m_socket->connectToHost(hostname, 21);
 }
@@ -43,6 +43,16 @@ Dialog::Dialog(QWidget *parent) :
 Dialog::~Dialog()
 {
     delete ui;
+}
+
+void Dialog::setState(SessionState::State* state)
+{
+    m_state.reset(state);
+}
+
+void Dialog::setStatus(const QString& status)
+{
+    ui->labelUpdate->setText(status);
 }
 
 void Dialog::onDataReceived()
@@ -80,7 +90,7 @@ void Dialog::onDataReceived()
 
 void Dialog::onConnect()
 {
-    ui->labelUpdate->setText(tr("Connected! Computing differences..."));
+    setStatus(tr("Connected! Computing differences..."));
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
     out.setByteOrder(QDataStream::LittleEndian);

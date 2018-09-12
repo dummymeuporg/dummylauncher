@@ -28,14 +28,16 @@ SOURCES += \
     state/state.cpp \
     state/initialstate.cpp \
     state/receivefilesstate.cpp \
-    state/receivefilescountstate.cpp
+    state/receivefilescountstate.cpp \
+    state/downloadfilesstate.cpp
 
 HEADERS += \
         dialog.h \
     state/state.h \
     state/initialstate.h \
     state/receivefilesstate.h \
-    state/receivefilescountstate.h
+    state/receivefilescountstate.h \
+    state/downloadfilesstate.h
 
 FORMS += \
         dialog.ui

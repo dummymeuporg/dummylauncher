@@ -24,13 +24,21 @@ public:
     explicit Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
-    template<typename T>
-    void setState()
-    {
-        m_state = std::make_unique<T>(*this);
-    }
+    void setState(SessionState::State* state);
 
     void addDownload(const QString&);
+
+    void setStatus(const QString&);
+
+    QTcpSocket& socket() {
+        return *m_socket;
+    }
+
+    const QQueue<QString>& downloadList() const
+    {
+        return m_downloadList;
+    }
+
 signals:
     void payloadDecoded();
 private slots:

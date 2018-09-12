@@ -3,8 +3,8 @@
 #include "state/receivefilescountstate.h"
 #include "state/receivefilesstate.h"
 
-SessionState::ReceiveFilesCountState::ReceiveFilesCountState(
-    ::Dialog& dialog) : SessionState::State(dialog)
+SessionState::ReceiveFilesCountState::ReceiveFilesCountState(::Dialog& dialog)
+    : SessionState::State(dialog)
 {
 
 }
@@ -21,6 +21,7 @@ void SessionState::ReceiveFilesCountState::onRead(QByteArray& buf)
     quint32 filecount;
 
     in >> filecount;
-
-    m_dialog.setState<SessionState::ReceiveFilesState>();
+    m_dialog.setStatus(tr("Number of files: %n", "", int(filecount)));
+    m_dialog.setState(
+        new SessionState::ReceiveFilesState(m_dialog, filecount));
 }

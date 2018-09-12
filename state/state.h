@@ -1,12 +1,16 @@
 #pragma once
 
+#include <QObject>
+
 class Dialog;
 class QByteArray;
 
 namespace SessionState
 {
-    class State
+    class State : public QObject
     {
+        Q_OBJECT
+
     public:
         State(::Dialog&);
         virtual ~State();

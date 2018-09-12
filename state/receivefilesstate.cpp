@@ -4,14 +4,29 @@
 #include <QFileInfo>
 #include <QString>
 
+#include <exception>
+
 #include "dialog.h"
 
 #include "state/receivefilesstate.h"
 
-SessionState::ReceiveFilesState::ReceiveFilesState(::Dialog& dialog)
-    : SessionState::State(dialog)
+struct NullFileCountException : public std::exception
 {
+    const char* what() const noexcept
+    {
+        return "File count cannot be empty.";
+    }
+};
 
+SessionState::ReceiveFilesState::ReceiveFilesState(::Dialog& dialog,
+                                                   quint32 filecount)
+    : SessionState::State(dialog), m_filecount(filecount),
+      m_currentFile(0)
+{
+    if (m_filecount == 0)
+    {
+        throw NullFileCountException();
+    }
 }
 
 SessionState::ReceiveFilesState::~ReceiveFilesState()
@@ -61,6 +76,10 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         qDebug() << "Hashes match.";
     }
 
+    if (++m_currentFile == m_filecount)
+    {
+        //m_dialog.setState()
+    }
 
 }
 
