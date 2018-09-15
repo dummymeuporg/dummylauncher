@@ -8,6 +8,7 @@
 
 #include "dialog.h"
 
+#include "state/downloadfilesstate.h"
 #include "state/receivefilesstate.h"
 
 struct NullFileCountException : public std::exception
@@ -53,34 +54,32 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         dir.mkdir(".");
 
         // Add file to download.
-        return;
-    }
-
-    if (!fileInfo.exists())
+        m_dialog.addDownload(filename);
+    } else if (!fileInfo.exists())
     {
         // Add file to download.
         m_dialog.addDownload(filename);
-        return;
-    }
+    } else {
+        // Compute sha1 & compare.
+        QByteArray computedHash(filesum(filename));
 
-    // Compute sha1 & compare.
-    QByteArray computedHash(filesum(filename));
-
-    if (computedHash != hash)
-    {
-        qDebug() << "Hashes don't match. Download.";
-        m_dialog.addDownload(filename);
-    }
-    else
-    {
-        qDebug() << "Hashes match.";
+        if (computedHash != hash)
+        {
+            qDebug() << "Hashes don't match. Download.";
+            m_dialog.addDownload(filename);
+        }
+        else
+        {
+            qDebug() << "Hashes match.";
+        }
     }
 
     if (++m_currentFile == m_filecount)
     {
-        //m_dialog.setState()
+        qDebug() << "Switch to download state";
+        m_dialog.setState(
+            new SessionState::DownloadFilesState(m_dialog));
     }
-
 }
 
 

@@ -10,7 +10,8 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog),
     m_socket(nullptr),
     m_state(new SessionState::InitialState(*this)),
-    m_payloadSize(0)
+    m_payloadSize(0),
+    m_readPayloadSize(true)
 {
     ui->setupUi(this);
 
@@ -37,7 +38,7 @@ Dialog::Dialog(QWidget *parent) :
                      SLOT(processData()));
     setStatus(tr("Connecting to update server..."));
     QString hostname = "kojiro.gcir.ovh";
-    m_socket->connectToHost(hostname, 21);
+    m_socket->connectToHost(hostname, 8087);
 }
 
 Dialog::~Dialog()
@@ -69,6 +70,7 @@ void Dialog::onDataReceived()
             return;
         }
         in >> m_payloadSize;
+        qDebug() << "Set payload size to: " << m_payloadSize;
     }
 
     if (m_socket->bytesAvailable() < m_payloadSize)
@@ -78,14 +80,34 @@ void Dialog::onDataReceived()
         return;
     }
 
-    if(m_socket->bytesAvailable() > 0)
-    {
-        qDebug() << "Will read " << m_payloadSize;
-        m_payload.resize(m_payloadSize);
-        m_socket->read(m_payload.data(), m_payloadSize);
-        emit payloadDecoded();
-    }
+    qDebug() << "Will read " << m_payloadSize;
+    m_payload.resize(m_payloadSize);
+    m_socket->read(m_payload.data(), m_payloadSize);
+    m_decodedChunks.enqueue(m_payload);
+    emit payloadDecoded();
+    qDebug() << "Reset payload.";
     m_payloadSize = 0;
+
+    while(m_socket->bytesAvailable() >= int(sizeof(quint16)))
+    {
+        qDebug() << m_socket->bytesAvailable() << "Bytes available";
+        in >> m_payloadSize;
+        qDebug() << "2: Set payload size to: " << m_payloadSize;
+        if(m_socket->bytesAvailable() >= m_payloadSize)
+        {
+            qDebug() << "Will read " << m_payloadSize;
+            m_payload.resize(m_payloadSize);
+            m_socket->read(m_payload.data(), m_payloadSize);
+            m_decodedChunks.enqueue(m_payload);
+            emit payloadDecoded();
+            qDebug() << "Reset payload.";
+            m_payloadSize = 0;
+        } else
+        {
+            break;
+        }
+
+    }
 }
 
 void Dialog::onConnect()
@@ -111,14 +133,8 @@ void Dialog::onSocketError(QAbstractSocket::SocketError error)
 
 void Dialog::processData()
 {
+    QByteArray payload = m_decodedChunks.dequeue();
     m_state->onRead(m_payload);
-    if (m_socket->bytesAvailable() >= int(sizeof(quint16)))
-    {
-        m_socket->read(reinterpret_cast<char*>(&m_payloadSize),
-                       sizeof(quint16));
-        qDebug() << "Next process: " << m_payloadSize;
-        emit m_socket->readyRead();
-    }
 }
 
 void Dialog::addDownload(const QString& filename)

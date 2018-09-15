@@ -40,6 +40,7 @@ public:
     }
 
 signals:
+    void packetStored();
     void payloadDecoded();
 private slots:
     void onDataReceived();
@@ -55,5 +56,7 @@ private:
     quint16 m_payloadSize;
     QByteArray m_payload;
     QQueue<QString> m_downloadList;
+    QQueue<QByteArray> m_decodedChunks;
+    bool m_readPayloadSize;
 
 };
