@@ -1,5 +1,8 @@
 #include <QDebug>
 
+#include "dialog.h"
+
+#include "state/downloadfilesstate.h"
 #include "state/downloadsinglefilestate.h"
 
 SessionState::DownloadSingleFileState::DownloadSingleFileState(
@@ -25,5 +28,17 @@ void SessionState::DownloadSingleFileState::onRead(QByteArray& buf)
     m_fstream.flush();
     m_bytesWritten += buf.size();
     qDebug() << "Bytes written: " << m_bytesWritten;
+
+    if (m_bytesWritten == m_fileSize)
+    {
+        m_dialog.updateDownloadProgress();
+        ++m_currentFile;
+
+        if (m_currentFile != m_dialog.downloadList().end())
+        {
+            m_dialog.setState(
+                new SessionState::DownloadFilesState(m_dialog, m_currentFile));
+        }
+    }
 
 }

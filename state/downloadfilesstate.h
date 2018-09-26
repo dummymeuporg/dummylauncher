@@ -10,7 +10,7 @@ namespace SessionState
     class DownloadFilesState : public State
     {
     public:
-        DownloadFilesState(::Dialog&);
+        DownloadFilesState(::Dialog&, QQueue<QString>::const_iterator);
         virtual ~DownloadFilesState() override;
         virtual void onRead(QByteArray& buf) override;
 

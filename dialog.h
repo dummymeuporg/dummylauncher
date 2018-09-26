@@ -39,6 +39,8 @@ public:
         return m_downloadList;
     }
 
+    void updateDownloadProgress();
+
 signals:
     void packetStored();
     void payloadDecoded();
@@ -58,5 +60,6 @@ private:
     QQueue<QString> m_downloadList;
     QQueue<QByteArray> m_decodedChunks;
     bool m_readPayloadSize;
+    int m_downloadedFiles;
 
 };

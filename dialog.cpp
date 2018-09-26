@@ -11,7 +11,8 @@ Dialog::Dialog(QWidget *parent) :
     m_socket(nullptr),
     m_state(new SessionState::InitialState(*this)),
     m_payloadSize(0),
-    m_readPayloadSize(true)
+    m_readPayloadSize(true),
+    m_downloadedFiles(0)
 {
     ui->setupUi(this);
 
@@ -140,4 +141,23 @@ void Dialog::processData()
 void Dialog::addDownload(const QString& filename)
 {
     m_downloadList.enqueue(filename);
+}
+
+void Dialog::updateDownloadProgress()
+{
+    if (m_downloadedFiles == m_downloadList.size()
+        || m_downloadList.size() == 0)
+    {
+        ui->progressBarUpdate->setValue(100);
+    }
+    else
+    {
+        ui->progressBarUpdate->setValue(
+            int((float(m_downloadedFiles)/m_downloadList.size())) * 100);
+    }
+
+    if (ui->progressBarUpdate->value() == 100)
+    {
+        ui->pushButtonConnect->setEnabled(true);
+    }
 }

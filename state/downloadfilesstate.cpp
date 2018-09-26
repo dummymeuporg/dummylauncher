@@ -6,9 +6,10 @@
 #include "state/downloadfilesstate.h"
 #include "state/downloadsinglefilestate.h"
 
-SessionState::DownloadFilesState::DownloadFilesState(::Dialog& dialog)
+SessionState::DownloadFilesState::DownloadFilesState(
+    ::Dialog& dialog, QQueue<QString>::const_iterator iterator)
     : SessionState::State(dialog),
-      m_fileIterator(m_dialog.downloadList().begin())
+      m_fileIterator(iterator)
 {
     _requestFile(*m_fileIterator);
 }

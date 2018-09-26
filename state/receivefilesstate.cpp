@@ -83,11 +83,13 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         {
             qDebug() << "Switch to download state";
             m_dialog.setState(
-                new SessionState::DownloadFilesState(m_dialog));
+                new SessionState::DownloadFilesState(
+                    m_dialog, m_dialog.downloadList().begin()));
         }
         else
         {
             qDebug() << "No file to download.";
+            m_dialog.updateDownloadProgress();
         }
     }
 }
