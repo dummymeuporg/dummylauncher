@@ -44,6 +44,7 @@ public:
 signals:
     void packetStored();
     void payloadDecoded();
+    void payloadMasterDecoded();
 private slots:
     void onDataReceived();
     void onConnect();
@@ -51,9 +52,17 @@ private slots:
     void onSocketError(QAbstractSocket::SocketError);
     void processData();
 
+    void onMasterDataReceived();
+    void onMasterConnect();
+    void onMasterDisconnect();
+    void onMasterSocketError(QAbstractSocket::SocketError);
+    void processMasterData();
+
+    void onPushButtonConnectClick();
+
 private:
     Ui::Dialog *ui;
-    QTcpSocket *m_socket;
+    QTcpSocket *m_socket, *m_masterSocket;
     std::unique_ptr<SessionState::State> m_state;
     quint16 m_payloadSize;
     QByteArray m_payload;

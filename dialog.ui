@@ -95,5 +95,25 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonConnect</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>onPushButtonConnectClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>340</x>
+     <y>117</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>375</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onPushButtonConnectClick()</slot>
+ </slots>
 </ui>

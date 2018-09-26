@@ -9,6 +9,7 @@ Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog),
     m_socket(nullptr),
+    m_masterSocket(nullptr),
     m_state(new SessionState::InitialState(*this)),
     m_payloadSize(0),
     m_readPayloadSize(true),
@@ -45,6 +46,8 @@ Dialog::Dialog(QWidget *parent) :
 Dialog::~Dialog()
 {
     delete ui;
+    delete m_socket;
+    delete m_masterSocket;
 }
 
 void Dialog::setState(SessionState::State* state)
@@ -122,6 +125,34 @@ void Dialog::onConnect()
     m_socket->write(paquet);
 }
 
+void Dialog::onPushButtonConnectClick()
+{
+    setStatus(tr("Connecting to master server..."));
+    m_masterSocket = new QTcpSocket(this);
+    QObject::connect(m_masterSocket,
+                     SIGNAL(readyRead()),
+                     this,
+                     SLOT(onMasterDataReceived()));
+    QObject::connect(m_masterSocket,
+                     SIGNAL(connected()),
+                     this,
+                     SLOT(onMasterConnect()));
+    QObject::connect(m_masterSocket,
+                     SIGNAL(disconnected()),
+                     this,
+                     SLOT(onMasterDisconnect()));
+    QObject::connect(m_masterSocket,
+                     SIGNAL(error(QAbstractSocket::SocketError)),
+                     this,
+                     SLOT(onMasterSocketError(QAbstractSocket::SocketError)));
+    QObject::connect(this,
+                     SIGNAL(payloadMasterDecoded()),
+                     this,
+                     SLOT(processMasterData()));
+    QString hostname = "192.168.1.18";
+    m_masterSocket->connectToHost(hostname, 33337);
+}
+
 void Dialog::onDisconnect()
 {
 
@@ -162,4 +193,30 @@ void Dialog::updateDownloadProgress()
     {
         ui->pushButtonConnect->setEnabled(true);
     }
+}
+
+void Dialog::onMasterConnect()
+{
+    setStatus(tr("Connected! Authenticating..."));
+
+}
+
+void Dialog::onMasterDataReceived()
+{
+
+}
+
+void Dialog::onMasterDisconnect()
+{
+
+}
+
+void Dialog::onMasterSocketError(QAbstractSocket::SocketError)
+{
+
+}
+
+void Dialog::processMasterData()
+{
+
 }
