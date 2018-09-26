@@ -53,17 +53,20 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         // Create dir.
         dir.mkdir(".");
 
+        qDebug() << "Dir does not exist. Add " << filename << " to download.";
+
         // Add file to download.
         m_dialog.addDownload(filename);
     } else if (!fileInfo.exists())
     {
         // Add file to download.
+        qDebug() << "File does not exist. Add " << filename << " to download.";
         m_dialog.addDownload(filename);
     } else {
         // Compute sha1 & compare.
         QByteArray computedHash(filesum(filename));
-
-        if (computedHash != hash)
+        qDebug() << "Computed sum: " << computedHash;
+        if (!_hashesMatch(computedHash, hash))
         {
             qDebug() << "Hashes don't match. Download.";
             m_dialog.addDownload(filename);
@@ -76,10 +79,37 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
 
     if (++m_currentFile == m_filecount)
     {
-        qDebug() << "Switch to download state";
-        m_dialog.setState(
-            new SessionState::DownloadFilesState(m_dialog));
+        if (m_dialog.downloadList().begin() != m_dialog.downloadList().end())
+        {
+            qDebug() << "Switch to download state";
+            m_dialog.setState(
+                new SessionState::DownloadFilesState(m_dialog));
+        }
+        else
+        {
+            qDebug() << "No file to download.";
+        }
     }
+}
+
+bool SessionState::ReceiveFilesState::_hashesMatch(const QByteArray& h1,
+                                                   const QByteArray& h2)
+{
+    if (h1.size() != h2.size())
+    {
+        return false;
+    }
+
+    for (int i = 0; i < h1.size(); i++)
+    {
+        if (h1[i] != h2[i])
+        {
+            qDebug() << quint8(h1[i]) << quint8(h2[i]);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
@@ -96,7 +126,7 @@ SessionState::ReceiveFilesState::filesum(const QString& filename)
     {
         count = file.read(chunk.data(),
                           SessionState::ReceiveFilesState::CHUNK_SIZE);
-        hasher.addData(chunk);
+        hasher.addData(chunk, count);
     } while (count == SessionState::ReceiveFilesState::CHUNK_SIZE);
 
     return hasher.result();

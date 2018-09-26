@@ -37,7 +37,7 @@ Dialog::Dialog(QWidget *parent) :
                      this,
                      SLOT(processData()));
     setStatus(tr("Connecting to update server..."));
-    QString hostname = "kojiro.gcir.ovh";
+    QString hostname = "128.1.1.164";
     m_socket->connectToHost(hostname, 8087);
 }
 

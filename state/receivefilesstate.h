@@ -17,6 +17,7 @@ namespace SessionState
         virtual ~ReceiveFilesState() override;
         virtual void onRead(QByteArray& buf) override;
     private:
+        static bool _hashesMatch(const QByteArray&, const QByteArray&);
         static QByteArray filesum(const QString&);
         quint32 m_filecount, m_currentFile;
     };

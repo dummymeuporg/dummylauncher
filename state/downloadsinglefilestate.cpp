@@ -22,6 +22,7 @@ void SessionState::DownloadSingleFileState::onRead(QByteArray& buf)
 {
     qDebug() << "Read " << buf.size() << " bytes";
     m_fstream.write(buf);
+    m_fstream.flush();
     m_bytesWritten += buf.size();
     qDebug() << "Bytes written: " << m_bytesWritten;
 
