@@ -38,7 +38,7 @@ Dialog::Dialog(QWidget *parent) :
                      this,
                      SLOT(processData()));
     setStatus(tr("Connecting to update server..."));
-    QString hostname = "128.1.1.164";
+    QString hostname = "192.168.1.18";
     m_socket->connectToHost(hostname, 8087);
 }
 
@@ -145,6 +145,7 @@ void Dialog::addDownload(const QString& filename)
 
 void Dialog::updateDownloadProgress()
 {
+
     if (m_downloadedFiles == m_downloadList.size()
         || m_downloadList.size() == 0)
     {
@@ -153,8 +154,9 @@ void Dialog::updateDownloadProgress()
     else
     {
         ui->progressBarUpdate->setValue(
-            int((float(m_downloadedFiles)/m_downloadList.size())) * 100);
+            int((float(++m_downloadedFiles)/m_downloadList.size())) * 100);
     }
+
 
     if (ui->progressBarUpdate->value() == 100)
     {
