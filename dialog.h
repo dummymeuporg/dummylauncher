@@ -34,12 +34,20 @@ public:
         return *m_socket;
     }
 
+    QTcpSocket& masterSocket()
+    {
+        return *m_masterSocket;
+    }
+
     const QQueue<QString>& downloadList() const
     {
         return m_downloadList;
     }
 
     void updateDownloadProgress();
+
+    QString login() const;
+    QString password() const;
 
 signals:
     void packetStored();

@@ -30,7 +30,8 @@ SOURCES += \
     state/receivefilesstate.cpp \
     state/receivefilescountstate.cpp \
     state/downloadfilesstate.cpp \
-    state/downloadsinglefilestate.cpp
+    state/downloadsinglefilestate.cpp \
+    state/masterinitialstate.cpp
 
 HEADERS += \
         dialog.h \
@@ -39,7 +40,8 @@ HEADERS += \
     state/receivefilesstate.h \
     state/receivefilescountstate.h \
     state/downloadfilesstate.h \
-    state/downloadsinglefilestate.h
+    state/downloadsinglefilestate.h \
+    state/masterinitialstate.h
 
 FORMS += \
         dialog.ui

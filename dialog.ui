@@ -40,7 +40,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_2">
+        <widget class="QLineEdit" name="lineEditPassword">
          <property name="echoMode">
           <enum>QLineEdit::Password</enum>
          </property>

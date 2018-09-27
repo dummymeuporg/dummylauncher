@@ -151,6 +151,9 @@ void Dialog::onPushButtonConnectClick()
                      SLOT(processMasterData()));
     QString hostname = "192.168.1.18";
     m_masterSocket->connectToHost(hostname, 33337);
+
+    // send login + hashed password
+
 }
 
 void Dialog::onDisconnect()
@@ -219,4 +222,14 @@ void Dialog::onMasterSocketError(QAbstractSocket::SocketError)
 void Dialog::processMasterData()
 {
 
+}
+
+QString Dialog::login() const
+{
+    return ui->lineEditLogin->text();
+}
+
+QString Dialog::password() const
+{
+    return ui->lineEditPassword->text();
 }
