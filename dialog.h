@@ -25,6 +25,7 @@ public:
     ~Dialog();
 
     void setState(SessionState::State* state);
+    void setMasterState(SessionState::State* state);
 
     void addDownload(const QString&);
 
@@ -71,7 +72,7 @@ private slots:
 private:
     Ui::Dialog *ui;
     QTcpSocket *m_socket, *m_masterSocket;
-    std::unique_ptr<SessionState::State> m_state;
+    std::unique_ptr<SessionState::State> m_state, m_masterState;
     quint16 m_payloadSize;
     QByteArray m_payload;
     QQueue<QString> m_downloadList;

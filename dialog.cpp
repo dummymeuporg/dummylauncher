@@ -11,6 +11,7 @@ Dialog::Dialog(QWidget *parent) :
     m_socket(nullptr),
     m_masterSocket(nullptr),
     m_state(new SessionState::InitialState(*this)),
+    m_masterState(nullptr),
     m_payloadSize(0),
     m_readPayloadSize(true),
     m_downloadedFiles(0)
@@ -53,6 +54,11 @@ Dialog::~Dialog()
 void Dialog::setState(SessionState::State* state)
 {
     m_state.reset(state);
+}
+
+void Dialog::setMasterState(SessionState::State* state)
+{
+    m_masterState.reset(state);
 }
 
 void Dialog::setStatus(const QString& status)
