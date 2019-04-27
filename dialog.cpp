@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "state/initialstate.h"
+#include "state/masterinitialstate.h"
 
 #include "dialog.h"
 #include "ui_dialog.h"
@@ -40,7 +41,7 @@ Dialog::Dialog(QWidget *parent) :
                      this,
                      SLOT(processData()));
     setStatus(tr("Connecting to update server..."));
-    QString hostname = "192.168.1.18";
+    QString hostname = "localhost";
     m_socket->connectToHost(hostname, 8087);
 }
 
@@ -155,7 +156,7 @@ void Dialog::onPushButtonConnectClick()
                      SIGNAL(payloadMasterDecoded()),
                      this,
                      SLOT(processMasterData()));
-    QString hostname = "192.168.1.18";
+    QString hostname = "127.0.0.1";
     m_masterSocket->connectToHost(hostname, 33337);
 
     // send login + hashed password
@@ -207,6 +208,7 @@ void Dialog::updateDownloadProgress()
 void Dialog::onMasterConnect()
 {
     setStatus(tr("Connected! Authenticating..."));
+    setMasterState(new SessionState::MasterInitialState(*this));
 
 }
 
