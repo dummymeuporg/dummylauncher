@@ -169,7 +169,7 @@ void Dialog::onDisconnect()
 
 void Dialog::onSocketError(QAbstractSocket::SocketError error)
 {
-    Q_UNUSED(error);
+    Q_UNUSED(error)
 }
 
 void Dialog::processData()

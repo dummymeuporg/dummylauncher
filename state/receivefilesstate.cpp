@@ -128,7 +128,7 @@ SessionState::ReceiveFilesState::filesum(const QString& filename)
     {
         count = file.read(chunk.data(),
                           SessionState::ReceiveFilesState::CHUNK_SIZE);
-        hasher.addData(chunk, count);
+        hasher.addData(chunk, qint32(count));
     } while (count == SessionState::ReceiveFilesState::CHUNK_SIZE);
 
     return hasher.result();
