@@ -1,5 +1,6 @@
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDebug>
 #include <QString>
 
 #include "dialog.h"
@@ -13,17 +14,16 @@ SessionState::MasterInitialState::MasterInitialState(::Dialog& dialog)
     QDataStream out(&packet, QIODevice::WriteOnly);
     out.setByteOrder(QDataStream::LittleEndian);
 
-    QString login(dialog.login());
+    QString login(dialog.login().toUpper());
     QString password(dialog.password());
 
-
-    QCryptographicHash hasher(QCryptographicHash::Sha3_512);
+    QCryptographicHash hasher(QCryptographicHash::Sha512);
     hasher.addData(QByteArray::fromRawData(login.toStdString().c_str(),
                                            login.size()));
     hasher.addData(QByteArray::fromRawData(password.toStdString().c_str(),
                                            password.size()));
-
     QByteArray hashedPassword(hasher.result());
+    qDebug() << hashedPassword;
     quint16 size = quint16(login.size()) + quint16(hashedPassword.size());
     out << size;
 
