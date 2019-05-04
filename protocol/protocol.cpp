@@ -1,6 +1,6 @@
 #include "protocol/protocol.h"
 
-Protocol::Protocol() : m_socket(new QTcpSocket(this))
+Protocol::Protocol() : m_payloadSize(0), m_socket(new QTcpSocket(this))
 {
     QObject::connect(m_socket,
                      SIGNAL(readyRead()),
