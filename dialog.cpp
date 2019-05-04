@@ -22,32 +22,6 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /*
-    m_socket = new QTcpSocket(this);
-    QObject::connect(m_socket,
-                     SIGNAL(readyRead()),
-                     this,
-                     SLOT(onDataReceived()));
-    QObject::connect(m_socket,
-                     SIGNAL(connected()),
-                     this,
-                     SLOT(onConnect()));
-    QObject::connect(m_socket,
-                     SIGNAL(disconnected()),
-                     this,
-                     SLOT(onDisconnect()));
-    QObject::connect(m_socket,
-                     SIGNAL(error(QAbstractSocket::SocketError)),
-                     this,
-                     SLOT(onSocketError(QAbstractSocket::SocketError)));
-    QObject::connect(this,
-                     SIGNAL(payloadDecoded()),
-                     this,
-                     SLOT(processData()));
-    setStatus(tr("Connecting to update server..."));
-    QString hostname = "localhost";
-    m_socket->connectToHost(hostname, 8087);
-    */
     setStatus(tr("Connecting to update server..."));
     m_updaterProtocol.setState(
         new SessionState::UpdaterInitialState(m_updaterProtocol)
@@ -76,31 +50,7 @@ void Dialog::setStatus(const QString& status)
 void Dialog::onPushButtonConnectClick()
 {
     setStatus(tr("Connecting to master server..."));
-    /*
-    m_masterSocket = new QTcpSocket(this);
-    QObject::connect(m_masterSocket,
-                     SIGNAL(readyRead()),
-                     this,
-                     SLOT(onMasterDataReceived()));
-    QObject::connect(m_masterSocket,
-                     SIGNAL(connected()),
-                     this,
-                     SLOT(onMasterConnect()));
-    QObject::connect(m_masterSocket,
-                     SIGNAL(disconnected()),
-                     this,
-                     SLOT(onMasterDisconnect()));
-    QObject::connect(m_masterSocket,
-                     SIGNAL(error(QAbstractSocket::SocketError)),
-                     this,
-                     SLOT(onMasterSocketError(QAbstractSocket::SocketError)));
-    QObject::connect(this,
-                     SIGNAL(payloadMasterDecoded()),
-                     this,
-                     SLOT(processMasterData()));
-    QString hostname = "127.0.0.1";
-    m_masterSocket->connectToHost(hostname, 33337);
-    */
+
 
 }
 
@@ -108,24 +58,6 @@ void Dialog::onPushButtonConnectClick()
 void Dialog::updateDownloadProgress()
 {
 
-    /*
-    if (m_downloadedFiles == m_downloadList.size()
-        || m_downloadList.size() == 0)
-    {
-        ui->progressBarUpdate->setValue(100);
-    }
-    else
-    {
-        ui->progressBarUpdate->setValue(
-            int((float(++m_downloadedFiles)/m_downloadList.size())) * 100);
-    }
-
-
-    if (ui->progressBarUpdate->value() == 100)
-    {
-        ui->pushButtonConnect->setEnabled(true);
-    }
-    */
 }
 
 void Dialog::onMasterConnect()
