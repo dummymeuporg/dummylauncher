@@ -159,8 +159,6 @@ void Dialog::onPushButtonConnectClick()
     QString hostname = "127.0.0.1";
     m_masterSocket->connectToHost(hostname, 33337);
 
-    // send login + hashed password
-
 }
 
 void Dialog::onDisconnect()
@@ -175,7 +173,7 @@ void Dialog::onSocketError(QAbstractSocket::SocketError error)
 
 void Dialog::processData()
 {
-    QByteArray payload = m_decodedChunks.dequeue();
+    //QByteArray payload = m_decodedChunks.dequeue();
     m_state->onRead(m_payload);
 }
 
@@ -219,12 +217,12 @@ void Dialog::onMasterDataReceived()
 
 void Dialog::onMasterDisconnect()
 {
-
+    setStatus(tr("Connection with the master server lost!"));
 }
 
 void Dialog::onMasterSocketError(QAbstractSocket::SocketError)
 {
-
+    setStatus(tr("Could not reach master server!"));
 }
 
 void Dialog::processMasterData()
