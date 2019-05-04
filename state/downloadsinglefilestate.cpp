@@ -13,7 +13,11 @@ SessionState::DownloadSingleFileState::DownloadSingleFileState(
                         m_bytesWritten(0),
                         m_fstream(*m_currentFile)
 {
-    m_fstream.open(QIODevice::WriteOnly);
+    qDebug() << "Current file: " << *m_currentFile;
+    if (!m_fstream.open(QIODevice::WriteOnly))
+    {
+        qDebug() << "Couln not open file!";
+    }
 }
 
 SessionState::DownloadSingleFileState::~DownloadSingleFileState()
