@@ -48,10 +48,14 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
 
     QFileInfo fileInfo(filename);
     QDir dir(fileInfo.dir());
+    qDebug() << "Absolute path: " << dir.absolutePath();
     if (!dir.exists())
     {
         // Create dir.
-        dir.mkdir(".");
+        if (!QDir().mkdir(fileInfo.dir().absolutePath()))
+        {
+            qDebug() << "Could not create directory " << dir << "!";
+        }
 
         qDebug() << "Dir does not exist. Add " << filename << " to download.";
 
