@@ -26,10 +26,7 @@ public:
     explicit Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
-    void setState(SessionState::State* state);
     void setMasterState(SessionState::State* state);
-
-    void addDownload(const QString&);
 
     void setStatus(const QString&);
 
@@ -42,11 +39,6 @@ public:
         return *m_masterSocket;
     }
 
-    const QQueue<QString>& downloadList() const
-    {
-        return m_downloadList;
-    }
-
     void updateDownloadProgress();
 
     QString login() const;
@@ -57,12 +49,6 @@ signals:
     void payloadDecoded();
     void payloadMasterDecoded();
 private slots:
-    void onDataReceived();
-    void onConnect();
-    void onDisconnect();
-    void onSocketError(QAbstractSocket::SocketError);
-    void processData();
-
     void onMasterDataReceived();
     void onMasterConnect();
     void onMasterDisconnect();
@@ -74,11 +60,10 @@ private slots:
 private:
     Ui::Dialog *ui;
     QTcpSocket *m_socket, *m_masterSocket;
-    std::unique_ptr<SessionState::State> m_state, m_masterState;
+    std::unique_ptr<SessionState::State> m_masterState;
     UpdaterProtocol m_updaterProtocol;
     quint16 m_payloadSize;
     QByteArray m_payload;
-    QQueue<QString> m_downloadList;
     QQueue<QByteArray> m_decodedChunks;
     bool m_readPayloadSize;
     int m_downloadedFiles;
