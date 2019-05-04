@@ -25,6 +25,7 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         dialog.cpp \
+    protocol/protocol.cpp \
     state/state.cpp \
     state/initialstate.cpp \
     state/receivefilesstate.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
         dialog.h \
+    protocol/protocol.h \
     state/state.h \
     state/initialstate.h \
     state/receivefilesstate.h \
