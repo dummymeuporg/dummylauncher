@@ -2,12 +2,14 @@
 
 #include "state/state.h"
 
+class Protocol;
+
 namespace SessionState
 {
     class MasterInitialState : public State
     {
     public:
-        MasterInitialState(::Dialog&);
+        MasterInitialState(::Protocol&);
         virtual ~MasterInitialState() override;
         virtual void onRead(QByteArray& buf) override;
     };

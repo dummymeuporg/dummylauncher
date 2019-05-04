@@ -13,6 +13,10 @@ public:
     Protocol();
     virtual ~Protocol();
     void connect(const QString&, unsigned short);
+    void setState(SessionState::State*);
+    QTcpSocket* socket() {
+        return m_socket;
+    }
 signals:
     void payloadDecoded();
 public slots:
@@ -23,9 +27,10 @@ private slots:
     void _processData();
     void _onSocketError(QAbstractSocket::SocketError error);
 private:
-    QTcpSocket* m_socket;
+
     quint16 m_payloadSize;
-    QByteArray m_payload;
     QQueue<QByteArray> m_decodedChunks;
+protected:
+    QTcpSocket* m_socket;
     std::unique_ptr<SessionState::State> m_state;
 };

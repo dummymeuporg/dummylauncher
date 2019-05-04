@@ -6,11 +6,14 @@
 
 #include <exception>
 
-#include "dialog.h"
+#include "protocol/updaterprotocol.h"
 
-#include "state/downloadfilesstate.h"
-#include "state/receivefilesstate.h"
+#include "state/updater_state/updaterdownloadfilesstate.h"
+#include "state/updater_state/updaterreceivefilesstate.h"
 
+
+namespace SessionState
+{
 struct NullFileCountException : public std::exception
 {
     const char* what() const noexcept
@@ -19,9 +22,9 @@ struct NullFileCountException : public std::exception
     }
 };
 
-SessionState::ReceiveFilesState::ReceiveFilesState(::Dialog& dialog,
+UpdaterReceiveFilesState::UpdaterReceiveFilesState(::Protocol& protocol,
                                                    quint32 filecount)
-    : SessionState::State(dialog), m_filecount(filecount),
+    : State(protocol), m_filecount(filecount),
       m_currentFile(0)
 {
     if (m_filecount == 0)
@@ -30,13 +33,15 @@ SessionState::ReceiveFilesState::ReceiveFilesState(::Dialog& dialog,
     }
 }
 
-SessionState::ReceiveFilesState::~ReceiveFilesState()
+UpdaterReceiveFilesState::~UpdaterReceiveFilesState()
 {
 
 }
 
-void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
+void UpdaterReceiveFilesState::onRead(QByteArray& buf)
 {
+    // I think this is kinda ugly.
+    UpdaterProtocol* protocol = static_cast<UpdaterProtocol*>(&m_protocol);
     qDebug() << "ReceiveFilesState: " << buf.data();
 
     // Separate hash from filename
@@ -60,12 +65,12 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         qDebug() << "Dir does not exist. Add " << filename << " to download.";
 
         // Add file to download.
-        m_dialog.addDownload(filename);
+        protocol->addDownload(filename);
     } else if (!fileInfo.exists())
     {
         // Add file to download.
         qDebug() << "File does not exist. Add " << filename << " to download.";
-        m_dialog.addDownload(filename);
+        protocol->addDownload(filename);
     } else {
         // Compute sha1 & compare.
         QByteArray computedHash(filesum(filename));
@@ -73,7 +78,7 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
         if (!_hashesMatch(computedHash, hash))
         {
             qDebug() << "Hashes don't match. Download.";
-            m_dialog.addDownload(filename);
+            protocol->addDownload(filename);
         }
         else
         {
@@ -83,23 +88,23 @@ void SessionState::ReceiveFilesState::onRead(QByteArray& buf)
 
     if (++m_currentFile == m_filecount)
     {
-        if (m_dialog.downloadList().begin() != m_dialog.downloadList().end())
+        if (protocol->downloadList().begin() != protocol->downloadList().end())
         {
             qDebug() << "Switch to DownloadFilesState";
-            m_dialog.setState(
-                new SessionState::DownloadFilesState(
-                    m_dialog, m_dialog.downloadList().begin()));
+            m_protocol.setState(
+                new UpdaterDownloadFilesState(
+                    m_protocol, protocol->downloadList().begin()));
         }
         else
         {
             qDebug() << "No file to download.";
-            m_dialog.updateDownloadProgress();
+            protocol->updateDownloadProgress();
         }
     }
 }
 
-bool SessionState::ReceiveFilesState::_hashesMatch(const QByteArray& h1,
-                                                   const QByteArray& h2)
+bool UpdaterReceiveFilesState::_hashesMatch(const QByteArray& h1,
+                                            const QByteArray& h2)
 {
     if (h1.size() != h2.size())
     {
@@ -120,21 +125,22 @@ bool SessionState::ReceiveFilesState::_hashesMatch(const QByteArray& h1,
 
 
 QByteArray
-SessionState::ReceiveFilesState::filesum(const QString& filename)
+UpdaterReceiveFilesState::filesum(const QString& filename)
 {
     QFile file(filename);
     QCryptographicHash hasher(QCryptographicHash::Sha1);
-    QByteArray chunk(SessionState::ReceiveFilesState::CHUNK_SIZE, '\0');
+    QByteArray chunk(CHUNK_SIZE, '\0');
     qint64 count = 0;
     file.open(QIODevice::ReadOnly);
 
     do
     {
-        count = file.read(chunk.data(),
-                          SessionState::ReceiveFilesState::CHUNK_SIZE);
+        count = file.read(chunk.data(), CHUNK_SIZE);
         hasher.addData(chunk, qint32(count));
-    } while (count == SessionState::ReceiveFilesState::CHUNK_SIZE);
+    } while (count == CHUNK_SIZE);
 
     return hasher.result();
 
 }
+
+} // UpdaterReceiveFilesState

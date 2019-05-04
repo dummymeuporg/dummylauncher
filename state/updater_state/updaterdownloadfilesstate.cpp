@@ -1,25 +1,28 @@
 #include <QDebug>
 #include <QString>
 
-#include "dialog.h"
+#include "protocol/protocol.h"
 
-#include "state/downloadfilesstate.h"
-#include "state/downloadsinglefilestate.h"
+#include "state/updater_state/updaterdownloadfilesstate.h"
+#include "state/updater_state/updaterdownloadsinglefilestate.h"
 
-SessionState::DownloadFilesState::DownloadFilesState(
-    ::Dialog& dialog, QQueue<QString>::const_iterator iterator)
-    : SessionState::State(dialog),
-      m_fileIterator(iterator)
+
+namespace SessionState
+{
+
+UpdaterDownloadFilesState::UpdaterDownloadFilesState(
+    ::Protocol& protocol, QQueue<QString>::const_iterator iterator)
+    : State(protocol), m_fileIterator(iterator)
 {
     _requestFile(*m_fileIterator);
 }
 
-SessionState::DownloadFilesState::~DownloadFilesState()
+UpdaterDownloadFilesState::~UpdaterDownloadFilesState()
 {
 
 }
 
-void SessionState::DownloadFilesState::_requestFile(const QString& filename)
+void UpdaterDownloadFilesState::_requestFile(const QString& filename)
 {
     QByteArray packet;
     QDataStream out(&packet, QIODevice::WriteOnly);
@@ -34,10 +37,10 @@ void SessionState::DownloadFilesState::_requestFile(const QString& filename)
     qDebug() << "Filename: " << filename;
     qDebug() << "Filename size: " << filename.size();
     qDebug() << "Size: " << packet.size();
-    m_dialog.socket().write(packet);
+    m_protocol.socket()->write(packet);
 }
 
-void SessionState::DownloadFilesState::onRead(QByteArray& buf)
+void UpdaterDownloadFilesState::onRead(QByteArray& buf)
 {
     QDataStream in(buf);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -47,8 +50,13 @@ void SessionState::DownloadFilesState::onRead(QByteArray& buf)
     in >> code >> filesize;
     qDebug() << "Code:" << code;
     qDebug() << "File size: " << filesize;
-    m_dialog.setState(
-        new SessionState::DownloadSingleFileState(m_dialog,
-                                                  m_fileIterator,
-                                                  filesize));
+    m_protocol.setState(
+        new UpdaterDownloadSingleFileState(
+            m_protocol,
+            m_fileIterator,
+            filesize
+        )
+    );
 }
+
+} // namespace SessionState

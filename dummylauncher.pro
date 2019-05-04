@@ -26,24 +26,26 @@ SOURCES += \
         main.cpp \
         dialog.cpp \
     protocol/protocol.cpp \
+    protocol/updaterprotocol.cpp \
     state/state.cpp \
-    state/initialstate.cpp \
-    state/receivefilesstate.cpp \
-    state/receivefilescountstate.cpp \
-    state/downloadfilesstate.cpp \
-    state/downloadsinglefilestate.cpp \
-    state/masterinitialstate.cpp
+    state/updater_state/updaterreceivefilesstate.cpp \
+    state/updater_state/updaterreceivefilescountstate.cpp \
+    state/updater_state/updaterdownloadfilesstate.cpp \
+    state/updater_state/updaterdownloadsinglefilestate.cpp \
+    state/masterinitialstate.cpp \
+    state/updater_state/updaterinitalstate.cpp
 
 HEADERS += \
         dialog.h \
     protocol/protocol.h \
+    protocol/updaterprotocol.h \
     state/state.h \
-    state/initialstate.h \
-    state/receivefilesstate.h \
-    state/receivefilescountstate.h \
-    state/downloadfilesstate.h \
-    state/downloadsinglefilestate.h \
-    state/masterinitialstate.h
+    state/updater_state/updaterreceivefilesstate.h \
+    state/updater_state/updaterreceivefilescountstate.h \
+    state/updater_state/updaterdownloadfilesstate.h \
+    state/updater_state/updaterdownloadsinglefilestate.h \
+    state/masterinitialstate.h \
+    state/updater_state/updaterinitalstate.h
 
 FORMS += \
         dialog.ui

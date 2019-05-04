@@ -10,13 +10,15 @@
 
 namespace SessionState
 {
-    class DownloadSingleFileState : public State
+    class UpdaterDownloadSingleFileState : public State
     {
     public:
-        DownloadSingleFileState(::Dialog&,
-                                QQueue<QString>::const_iterator,
-                                quint32);
-        virtual ~DownloadSingleFileState() override;
+        UpdaterDownloadSingleFileState(
+            ::Protocol&,
+            QQueue<QString>::const_iterator,
+            quint32
+        );
+        virtual ~UpdaterDownloadSingleFileState() override;
         virtual void onRead(QByteArray& buf) override;
     private:
         QQueue<QString>::const_iterator m_currentFile;

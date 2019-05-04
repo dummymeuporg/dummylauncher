@@ -7,6 +7,8 @@
 #include <QString>
 #include <QtNetwork>
 
+#include "protocol/updaterprotocol.h"
+
 namespace SessionState
 {
     class State;
@@ -73,6 +75,7 @@ private:
     Ui::Dialog *ui;
     QTcpSocket *m_socket, *m_masterSocket;
     std::unique_ptr<SessionState::State> m_state, m_masterState;
+    UpdaterProtocol m_updaterProtocol;
     quint16 m_payloadSize;
     QByteArray m_payload;
     QQueue<QString> m_downloadList;

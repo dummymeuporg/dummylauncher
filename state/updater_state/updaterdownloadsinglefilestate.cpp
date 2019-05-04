@@ -1,13 +1,15 @@
 #include <QDebug>
 
-#include "dialog.h"
+#include "protocol/updaterprotocol.h"
 
-#include "state/downloadfilesstate.h"
-#include "state/downloadsinglefilestate.h"
+#include "state/updater_state/updaterdownloadfilesstate.h"
+#include "state/updater_state/updaterdownloadsinglefilestate.h"
 
-SessionState::DownloadSingleFileState::DownloadSingleFileState(
-    ::Dialog& dialog, QQueue<QString>::const_iterator currentFile,
-    quint32 fileSize) : SessionState::State(dialog),
+namespace SessionState
+{
+UpdaterDownloadSingleFileState::UpdaterDownloadSingleFileState(
+    ::Protocol& protocol, QQueue<QString>::const_iterator currentFile,
+    quint32 fileSize) : State(protocol),
                         m_currentFile(currentFile),
                         m_fileSize(fileSize),
                         m_bytesWritten(0),
@@ -20,13 +22,15 @@ SessionState::DownloadSingleFileState::DownloadSingleFileState(
     }
 }
 
-SessionState::DownloadSingleFileState::~DownloadSingleFileState()
+UpdaterDownloadSingleFileState::~UpdaterDownloadSingleFileState()
 {
     m_fstream.close();
 }
 
-void SessionState::DownloadSingleFileState::onRead(QByteArray& buf)
+void UpdaterDownloadSingleFileState::onRead(QByteArray& buf)
 {
+    // I think this is kinda ugly.
+    UpdaterProtocol* protocol = static_cast<UpdaterProtocol*>(&m_protocol);
     qDebug() << "Read " << buf.size() << " bytes";
     m_fstream.write(buf);
     m_fstream.flush();
@@ -36,16 +40,16 @@ void SessionState::DownloadSingleFileState::onRead(QByteArray& buf)
     if (m_bytesWritten == m_fileSize)
     {
         qDebug() << "All bytes written for " << *m_currentFile;
-        m_dialog.updateDownloadProgress();
+        //m_dialog.updateDownloadProgress();
 
         ++m_currentFile;
-        qDebug() << "Fooaaa.";
-        if (m_currentFile != m_dialog.downloadList().end())
+
+        if (m_currentFile != protocol->downloadList().end())
         {
             qDebug() << "Get to next file:";
 
-            m_dialog.setState(
-                new SessionState::DownloadFilesState(m_dialog, m_currentFile));
+            m_protocol.setState(
+                new UpdaterDownloadFilesState(m_protocol, m_currentFile));
         }
         else
         {
@@ -54,3 +58,5 @@ void SessionState::DownloadSingleFileState::onRead(QByteArray& buf)
     }
 
 }
+
+} // namespace SessionState

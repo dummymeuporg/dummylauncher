@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-class Dialog;
+class Protocol;
 class QByteArray;
 
 namespace SessionState
@@ -12,10 +12,10 @@ namespace SessionState
         Q_OBJECT
 
     public:
-        State(::Dialog&);
+        State(::Protocol&);
         virtual ~State();
         virtual void onRead(QByteArray&) = 0;
     protected:
-        ::Dialog& m_dialog;
+        ::Protocol& m_protocol;
     };
 }

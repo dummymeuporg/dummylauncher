@@ -1,7 +1,10 @@
 #include <QDebug>
 
-#include "state/initialstate.h"
+#include "protocol/updaterprotocol.h"
+
+#include "state/updater_state/updaterinitalstate.h"
 #include "state/masterinitialstate.h"
+
 
 #include "dialog.h"
 #include "ui_dialog.h"
@@ -11,14 +14,15 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog),
     m_socket(nullptr),
     m_masterSocket(nullptr),
-    m_state(new SessionState::InitialState(*this)),
     m_masterState(nullptr),
+    m_updaterProtocol(*this),
     m_payloadSize(0),
     m_readPayloadSize(true),
     m_downloadedFiles(0)
 {
     ui->setupUi(this);
 
+    /*
     m_socket = new QTcpSocket(this);
     QObject::connect(m_socket,
                      SIGNAL(readyRead()),
@@ -43,6 +47,12 @@ Dialog::Dialog(QWidget *parent) :
     setStatus(tr("Connecting to update server..."));
     QString hostname = "localhost";
     m_socket->connectToHost(hostname, 8087);
+    */
+    setStatus(tr("Connecting to update server..."));
+    m_updaterProtocol.setState(
+        new SessionState::UpdaterInitialState(m_updaterProtocol)
+    );
+    m_updaterProtocol.connect("localhost", 8087);
 }
 
 Dialog::~Dialog()
@@ -135,6 +145,7 @@ void Dialog::onConnect()
 void Dialog::onPushButtonConnectClick()
 {
     setStatus(tr("Connecting to master server..."));
+    /*
     m_masterSocket = new QTcpSocket(this);
     QObject::connect(m_masterSocket,
                      SIGNAL(readyRead()),
@@ -158,6 +169,7 @@ void Dialog::onPushButtonConnectClick()
                      SLOT(processMasterData()));
     QString hostname = "127.0.0.1";
     m_masterSocket->connectToHost(hostname, 33337);
+    */
 
 }
 
@@ -206,7 +218,7 @@ void Dialog::updateDownloadProgress()
 void Dialog::onMasterConnect()
 {
     setStatus(tr("Connected! Authenticating..."));
-    setMasterState(new SessionState::MasterInitialState(*this));
+    //setMasterState(new SessionState::MasterInitialState(*this));
 
 }
 
